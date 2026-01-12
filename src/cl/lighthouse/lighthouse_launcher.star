@@ -1,5 +1,6 @@
 shared_utils = import_module("../../shared_utils/shared_utils.star")
 input_parser = import_module("../../package_io/input_parser.star")
+postgres = import_module("github.com/kurtosis-tech/postgres-package/main.star")
 cl_context = import_module("../../cl/cl_context.star")
 cl_node_ready_conditions = import_module("../../cl/cl_node_ready_conditions.star")
 cl_shared = import_module("../cl_shared.star")
@@ -62,6 +63,30 @@ def launch(
     tempo_otlp_grpc_url=None,
     bootnode_enr_override=None,
 ):
+#---------------------------------
+# Optional Postgres Service
+#---------------------------------
+postgres_output = None 
+
+# MVP toggle: set in network_params.yaml via cl_extra_env_vars
+# LIGHTHOUSE_USE_POSTGRES: "true"
+use_pg = False
+if "LIGHTHOUSE_USE_POSTGRES" in participant.cl_extra_env_vars:
+    use_pg = participant.cl_extra_env_vars["LIGHTHOUSE_USE_POSTGRES"] == "true"
+
+if use_pg:
+    # Use a per-node postgres service name to avoid collisions
+    pg_service_name = "{}-postgres".format(beacon_service_name)
+
+    postgres_output = postgres.run(
+        plan,
+        service_name=pg_service_name,
+        database="lighthouse",
+        persistent=persistent,
+        node_selectors=node_selectors,
+        tolerations=tolerations,
+    )
+
     # Launch Beacon node
     beacon_config = get_beacon_config(
         plan,
@@ -86,6 +111,7 @@ def launch(
         backend,
         tempo_otlp_grpc_url,
         bootnode_enr_override,
+        postgres_output,
     )
 
     beacon_service = plan.add_service(beacon_service_name, beacon_config)
@@ -126,6 +152,7 @@ def get_beacon_config(
     backend,
     tempo_otlp_grpc_url,
     bootnode_enr_override=None,
+    postgres_output=None,
 ):
     log_level = input_parser.get_client_log_level_or_default(
         participant.cl_log_level, global_log_level, VERBOSITY_LEVELS
@@ -271,6 +298,21 @@ def get_beacon_config(
     if tempo_otlp_grpc_url != None:
         cmd.append("--telemetry-collector-url={}".format(tempo_otlp_grpc_url))
         cmd.append("--telemetry-service-name={}".format(beacon_service_name))
+    
+    # ------------------------------------
+    # Optional Postgres backend
+    # ------------------------------------
+    if postgres_output != None:
+        postgres_url = "{protocol}://{user}:{password}@{hostname}:{port}/{database}".format(
+            protocol="postgresql",
+            user=postgres_output.user,
+            password=postgres_output.service.hostname,
+            port=postgres_output.port.number,
+            database=postgres_output.database,
+        )
+
+        cmd.append("--beacon-node-backend=postgres")
+        cmd.append("--postgres-url={}".format(postgres_url))
 
     if len(participant.cl_extra_params) > 0:
         # this is a repeated<proto type>, we convert it into Starlark
