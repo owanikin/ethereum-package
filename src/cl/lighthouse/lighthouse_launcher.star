@@ -63,29 +63,29 @@ def launch(
     tempo_otlp_grpc_url=None,
     bootnode_enr_override=None,
 ):
-#---------------------------------
-# Optional Postgres Service
-#---------------------------------
-postgres_output = None 
+    #---------------------------------
+    # Optional Postgres Service
+    #---------------------------------
+    postgres_output = None 
 
-# MVP toggle: set in network_params.yaml via cl_extra_env_vars
-# LIGHTHOUSE_USE_POSTGRES: "true"
-use_pg = False
-if "LIGHTHOUSE_USE_POSTGRES" in participant.cl_extra_env_vars:
-    use_pg = participant.cl_extra_env_vars["LIGHTHOUSE_USE_POSTGRES"] == "true"
+    # MVP toggle: set in network_params.yaml via cl_extra_env_vars
+    # LIGHTHOUSE_USE_POSTGRES: "true"
+    use_pg = False
+    if "LIGHTHOUSE_USE_POSTGRES" in participant.cl_extra_env_vars:
+        use_pg = participant.cl_extra_env_vars["LIGHTHOUSE_USE_POSTGRES"] == "true"
 
-if use_pg:
-    # Use a per-node postgres service name to avoid collisions
-    pg_service_name = "{}-postgres".format(beacon_service_name)
+    if use_pg:
+        # Use a per-node postgres service name to avoid collisions
+        pg_service_name = "{}-postgres".format(beacon_service_name)
 
-    postgres_output = postgres.run(
-        plan,
-        service_name=pg_service_name,
-        database="lighthouse",
-        persistent=persistent,
-        node_selectors=node_selectors,
-        tolerations=tolerations,
-    )
+        postgres_output = postgres.run(
+            plan,
+            service_name=pg_service_name,
+            database="lighthouse",
+            persistent=persistent,
+            node_selectors=node_selectors,
+            tolerations=tolerations,
+        )
 
     # Launch Beacon node
     beacon_config = get_beacon_config(
