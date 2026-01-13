@@ -306,7 +306,8 @@ def get_beacon_config(
         postgres_url = "{protocol}://{user}:{password}@{hostname}:{port}/{database}".format(
             protocol="postgresql",
             user=postgres_output.user,
-            password=postgres_output.service.hostname,
+            password=postgres_output.password,
+            hostname=postgres_output.service.hostname,
             port=postgres_output.port.number,
             database=postgres_output.database,
         )
