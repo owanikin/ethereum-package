@@ -226,6 +226,16 @@ def launch(
         all_snooper_el_engine_contexts.append(snooper_el_engine_context)
         full_name = "{0}-{1}-{2}".format(index_str, el_type, cl_type)
         if index == 0:
+            postgres_output = None
+            if cl_type == constants.CL_TYPE.lighthouse:
+                postgres_output = lighthouse.maybe_launch_postgres(
+                    plan,
+                    cl_service_name,
+                    participant,
+                    persistent,
+                    node_selectors,
+                    tolerations,
+                )
             cl_context = launch_method(
                 plan,
                 cl_launcher,
@@ -249,6 +259,7 @@ def launch(
                 backend,
                 tempo_otlp_grpc_url,
                 bootnode_enr_override,
+                postgres_output,
             )
 
             blobber_config = get_blobber_config(
@@ -277,6 +288,18 @@ def launch(
         else:
             boot_cl_client_ctx = all_cl_contexts
 
+            # If lighthouse + LIGHTHOUSE_USE_POSTGRES=true, spin up postgres service for this node
+            postgres_output = None
+            if cl_type == constants.CL_TYPE.lighthouse:
+                postgres_output = lighthouse.maybe_launch_postgres(
+                    plan,
+                    cl_service_name,
+                    participant,
+                    persistent,
+                    node_selectors,
+                    tolerations,
+                )
+
             cl_service_configs[cl_service_name] = get_beacon_config(
                 plan,
                 cl_launcher,
@@ -300,6 +323,7 @@ def launch(
                 backend,
                 tempo_otlp_grpc_url,
                 bootnode_enr_override,
+                postgres_output,
             )
 
             cl_participant_info[cl_service_name] = {

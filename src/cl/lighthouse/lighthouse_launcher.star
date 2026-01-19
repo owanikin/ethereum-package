@@ -39,6 +39,33 @@ VERBOSITY_LEVELS = {
 }
 
 
+def maybe_launch_postgres(
+    plan,
+    beacon_service_name,
+    participant,
+    persistent,
+    node_selectors,
+    tolerations,
+):
+    postgres_output = None
+
+    use_pg = False
+    if "LIGHTHOUSE_USE_POSTGRES" in participant.cl_extra_env_vars:
+        use_pg = participant.cl_extra_env_vars["LIGHTHOUSE_USE_POSTGRES"] == "true"
+
+    if use_pg:
+        pg_service_name = "{}-postgres".format(beacon_service_name)
+        postgres_output = postgres.run(
+            plan,
+            service_name=pg_service_name,
+            database="lighthouse",
+            persistent=persistent,
+            node_selectors=node_selectors,
+            tolerations=tolerations,
+        )
+    return postgres_output
+
+
 def launch(
     plan,
     launcher,
@@ -62,31 +89,8 @@ def launch(
     backend,
     tempo_otlp_grpc_url=None,
     bootnode_enr_override=None,
+    postgres_output=None,
 ):
-    #---------------------------------
-    # Optional Postgres Service
-    #---------------------------------
-    postgres_output = None 
-
-    # MVP toggle: set in network_params.yaml via cl_extra_env_vars
-    # LIGHTHOUSE_USE_POSTGRES: "true"
-    use_pg = False
-    if "LIGHTHOUSE_USE_POSTGRES" in participant.cl_extra_env_vars:
-        use_pg = participant.cl_extra_env_vars["LIGHTHOUSE_USE_POSTGRES"] == "true"
-
-    if use_pg:
-        # Use a per-node postgres service name to avoid collisions
-        pg_service_name = "{}-postgres".format(beacon_service_name)
-
-        postgres_output = postgres.run(
-            plan,
-            service_name=pg_service_name,
-            database="lighthouse",
-            persistent=persistent,
-            node_selectors=node_selectors,
-            tolerations=tolerations,
-        )
-
     # Launch Beacon node
     beacon_config = get_beacon_config(
         plan,
@@ -298,18 +302,20 @@ def get_beacon_config(
     if tempo_otlp_grpc_url != None:
         cmd.append("--telemetry-collector-url={}".format(tempo_otlp_grpc_url))
         cmd.append("--telemetry-service-name={}".format(beacon_service_name))
-    
+
     # ------------------------------------
     # Optional Postgres backend
     # ------------------------------------
     if postgres_output != None:
-        postgres_url = "{protocol}://{user}:{password}@{hostname}:{port}/{database}".format(
-            protocol="postgresql",
-            user=postgres_output.user,
-            password=postgres_output.password,
-            hostname=postgres_output.service.hostname,
-            port=postgres_output.port.number,
-            database=postgres_output.database,
+        postgres_url = (
+            "{protocol}://{user}:{password}@{hostname}:{port}/{database}".format(
+                protocol="postgresql",
+                user=postgres_output.user,
+                password=postgres_output.password,
+                hostname=postgres_output.service.hostname,
+                port=postgres_output.port.number,
+                database=postgres_output.database,
+            )
         )
 
         cmd.append("--beacon-node-backend=postgres")
