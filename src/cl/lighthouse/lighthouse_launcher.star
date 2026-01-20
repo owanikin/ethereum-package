@@ -47,23 +47,45 @@ def maybe_launch_postgres(
     node_selectors,
     tolerations,
 ):
-    postgres_output = None
-
+    # Only fun Postgres if user enabled it in network_params.yaml
     use_pg = False
     if "LIGHTHOUSE_USE_POSTGRES" in participant.cl_extra_env_vars:
         use_pg = participant.cl_extra_env_vars["LIGHTHOUSE_USE_POSTGRES"] == "true"
 
-    if use_pg:
-        pg_service_name = "{}-postgres".format(beacon_service_name)
-        postgres_output = postgres.run(
-            plan,
-            service_name=pg_service_name,
-            database="lighthouse",
-            persistent=persistent,
-            node_selectors=node_selectors,
-            tolerations=tolerations,
-        )
-    return postgres_output
+    if not use_pg:
+        return None
+
+    pg_service_name = "{}-postgres".format(beacon_service_name)
+
+    # Defaults for Kurtosis testing (safe + reproducible)
+    pg_user = "postgres"
+    pg_password = "postgres"
+    pg_db = "lighthouse"
+
+    # Optional overides from network_params.yaml via cl_extra_env_vars
+    # Example:
+    # cl_extra_env_vars:
+    #   LIGHTHOUSE_USE_POSTGRES: "true"
+    #   LIGHTHOUSE_POSTGRES_USER: "postgres"
+    #   LIGHTHOUSE_POSTGRES_PASSWORD: "admin123"
+    #   LIGHTHOUSE_POSTGRES_DB: "lighthouse"
+    if "LIGHTHOUSE_POSTGRES_USER" in participant.cl_extra_env_vars:
+        pg_user = participant.cl_extra_env_vars["LIGHTHOUSE_POSTGRES_USER"]
+    if "LIGHTHOUSE_POSTGRES_PASSWORD" in participant.cl_extra_env_vars:
+        pg_password = participant.cl_extra_env_vars["LIGHTHOUSE_POSTGRES_PASSWORD"]
+    if "LIGHTHOUSE_POSTGRES_DB" in participant.cl_extra_env_vars:
+        pg_db = participant.cl_extra_env_vars["LIGHTHOUSE_POSTGRES_DB"]
+
+    return postgres.run(
+        plan,
+        service_name=pg_service_name,
+        database=pg_db,
+        user=pg_user,
+        password=pg_password,
+        persistent=persistent,
+        node_selectors=node_selectors,
+        tolerations=tolerations,
+    )
 
 
 def launch(
