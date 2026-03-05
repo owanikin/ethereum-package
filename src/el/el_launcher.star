@@ -10,6 +10,7 @@ reth = import_module("./reth/reth_launcher.star")
 ethereumjs = import_module("./ethereumjs/ethereumjs_launcher.star")
 nimbus_eth1 = import_module("./nimbus-eth1/nimbus_launcher.star")
 ethrex = import_module("./ethrex/ethrex_launcher.star")
+reec = import_module("./reec/reec_launcher.star")
 
 def launch(
     plan,
@@ -105,6 +106,14 @@ def launch(
                 network_params.network,
             ),
             "launch_method": ethrex.launch,
+        },
+        constants.EL_TYPE.reec: {
+            "launcher": reec.new_reec_launcher(
+                el_cl_data,
+                jwt_file,
+                network_params.network,
+            ),
+            "launch_method": reec.launch,
         },
     }
 

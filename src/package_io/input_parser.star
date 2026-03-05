@@ -13,6 +13,7 @@ DEFAULT_EL_IMAGES = {
     "ethereumjs": "ethpandaops/ethereumjs:master",
     "nimbus": "ethpandaops/nimbus-eth1:master",
     "ethrex": "ethrex:latest",
+    "reec": "reec:latest",
 }
 
 DEFAULT_CL_IMAGES = {

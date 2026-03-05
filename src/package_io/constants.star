@@ -8,6 +8,7 @@ EL_TYPE = struct(
     ethereumjs="ethereumjs",
     nimbus="nimbus",
     ethrex="ethrex",
+    reec="reec",
 )
 
 CL_TYPE = struct(
@@ -147,6 +148,7 @@ VOLUME_SIZE = {
         "lodestar_volume_size": 500000,  # 500GB
         "grandine_volume_size": 500000,  # 500GB,
         "ethrex_volume_size": 500000,  # 500GB
+        "reec_volume_size": 500000,  # 500GB
     },
     "sepolia": {
         "geth_volume_size": 300000,  # 300GB
@@ -163,6 +165,7 @@ VOLUME_SIZE = {
         "lodestar_volume_size": 150000,  # 150GB
         "grandine_volume_size": 150000,  # 150GB,
         "ethrex_volume_size": 150000,  # 150GB
+        "reec_volume_size": 150000,  # 150GB
     },
     "holesky": {
         "geth_volume_size": 100000,  # 100GB
@@ -179,6 +182,7 @@ VOLUME_SIZE = {
         "lodestar_volume_size": 100000,  # 100GB
         "grandine_volume_size": 100000,  # 100GB,
         "ethrex_volume_size": 100000,  # 100GB
+        "reec_volume_size": 100000,  # 100GB
     },
     "devnets": {
         "geth_volume_size": 100000,  # 100GB
@@ -195,6 +199,7 @@ VOLUME_SIZE = {
         "lodestar_volume_size": 100000,  # 100GB
         "grandine_volume_size": 100000,  # 100GB,
         "ethrex_volume_size": 100000,  # 100GB
+        "reec_volume_size": 100000,  # 100GB
     },
     "ephemery": {
         "geth_volume_size": 5000,  # 5GB
@@ -211,6 +216,7 @@ VOLUME_SIZE = {
         "lodestar_volume_size": 1000,  # 1GB
         "grandine_volume_size": 1000,  # 1GB
         "ethrex_volume_size": 1000,  # 1GB
+        "reec_volume_size": 1000,  # 1GB
     },
     "kurtosis": {
         "geth_volume_size": 5000,  # 5GB
@@ -227,6 +233,7 @@ VOLUME_SIZE = {
         "lodestar_volume_size": 1000,  # 1GB
         "grandine_volume_size": 1000,  # 1GB
         "ethrex_volume_size": 1000,  # 1GB
+        "reec_volume_size": 1000,  # 1GB
     },
 }
 
@@ -260,6 +267,8 @@ RAM_CPU_OVERRIDES = {
         "grandine_max_cpu": 4000,  # 4 cores
         "ethrex_max_mem": 16384,  # 16GB
         "ethrex_max_cpu": 4000,  # 4 cores
+        "reec_max_mem": 16384,  # 16GB
+        "reec_max_cpu": 4000,  # 4 cores
     },
     "sepolia": {
         "geth_max_mem": 4096,  # 4GB
@@ -290,6 +299,8 @@ RAM_CPU_OVERRIDES = {
         "grandine_max_cpu": 1000,  # 1 core
         "ethrex_max_mem": 4096,  # 4GB
         "ethrex_max_cpu": 1000,  # 1 core
+        "reec_max_mem": 4096,  # 4GB
+        "reec_max_cpu": 1000,  # 1 core
     },
     "holesky": {
         "geth_max_mem": 8192,  # 8GB
@@ -320,6 +331,8 @@ RAM_CPU_OVERRIDES = {
         "grandine_max_cpu": 2000,  # 2 cores
         "ethrex_max_mem": 8192,  # 8GB
         "ethrex_max_cpu": 2000,  # 2 cores
+        "reec_max_mem": 8192,  # 8GB
+        "reec_max_cpu": 2000,  # 2 cores
     },
     "devnets": {
         "geth_max_mem": 4096,  # 4GB
@@ -350,6 +363,8 @@ RAM_CPU_OVERRIDES = {
         "grandine_max_cpu": 1000,  # 1 core
         "ethrex_max_mem": 4096,  # 4GB
         "ethrex_max_cpu": 1000,  # 1 core
+        "reec_max_mem": 4096,  # 4GB
+        "reec_max_cpu": 1000,  # 1 core
     },
     "ephemery": {
         "geth_max_mem": 1024,  # 1GB
@@ -380,6 +395,8 @@ RAM_CPU_OVERRIDES = {
         "grandine_max_cpu": 1000,  # 1 core
         "ethrex_max_mem": 1024,  # 1GB
         "ethrex_max_cpu": 1000,  # 1 core
+        "reec_max_mem": 1024,  # 1GB
+        "reec_max_cpu": 1000,  # 1 core
     },
     "kurtosis": {
         "geth_max_mem": 1024,  # 1GB
@@ -410,5 +427,7 @@ RAM_CPU_OVERRIDES = {
         "grandine_max_cpu": 1000,  # 1 core
         "ethrex_max_mem": 1024,  # 1GB
         "ethrex_max_cpu": 1000,  # 1 core
+        "reec_max_mem": 1024,  # 1GB
+        "reec_max_cpu": 1000,  # 1 core
     },
 }
